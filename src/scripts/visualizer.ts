@@ -181,7 +181,6 @@ export function initVisualizer() {
   const drawPoster = () => {
     const savedMode = mode;
     mode = 'demo';
-    scrolling = 0.4;
     for (let i = 0; i < BAR_COUNT; i += 1) {
       const p = i / (BAR_COUNT - 1);
       const envelope = Math.pow(1 - p, 1.35) * 0.82 + 0.12;

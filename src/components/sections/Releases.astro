@@ -35,7 +35,7 @@ import { RELEASES } from '../../data/releases';
             <article class="release" data-reveal>
               <div
                 class="release__art"
-                style={`--cover: url(${cover.src}); --cover-position: ${release.coverPosition};`}
+                style={`--cover-position: ${release.coverPosition};`}
               >
                 <Image
                   class="release__image"
@@ -48,8 +48,30 @@ import { RELEASES } from '../../data/releases';
                   loading="lazy"
                   decoding="async"
                 />
-                <span class="release__wash release__wash--red" aria-hidden="true"></span>
-                <span class="release__wash release__wash--cyan" aria-hidden="true"></span>
+                <Image
+                  class="release__wash release__wash--red"
+                  src={cover}
+                  alt=""
+                  widths={[480, 720, 960]}
+                  sizes="(max-width: 720px) 45vw, (max-width: 1100px) 45vw, 25vw"
+                  format="webp"
+                  quality={70}
+                  loading="lazy"
+                  decoding="async"
+                  aria-hidden="true"
+                />
+                <Image
+                  class="release__wash release__wash--cyan"
+                  src={cover}
+                  alt=""
+                  widths={[480, 720, 960]}
+                  sizes="(max-width: 720px) 45vw, (max-width: 1100px) 45vw, 25vw"
+                  format="webp"
+                  quality={70}
+                  loading="lazy"
+                  decoding="async"
+                  aria-hidden="true"
+                />
                 <span class="release__scanlines" aria-hidden="true"></span>
 
                 <span class="release__catalog mono">{release.catalog}</span>
@@ -179,9 +201,10 @@ import { RELEASES } from '../../data/releases';
     position: absolute;
     inset: 0;
     z-index: 2;
-    background-image: var(--cover);
-    background-size: cover;
-    background-position: var(--cover-position, 50% 50%);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--cover-position, 50% 50%);
     filter: grayscale(1) contrast(1.4) sepia(1) saturate(5);
     mix-blend-mode: screen;
     opacity: 0;
