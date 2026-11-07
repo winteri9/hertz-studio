@@ -8,7 +8,7 @@ import { defineConfig } from 'astro/config';
  * site — обязателен для абсолютных OG-ссылок и sitemap. Вписать домен проекта.
  */
 export default defineConfig({
-  site: 'https://hertz.studio',
+  site: 'https://hertz-studio.vercel.app',
   build: { format: 'directory' },
   compressHTML: true,
   devToolbar: { enabled: false },

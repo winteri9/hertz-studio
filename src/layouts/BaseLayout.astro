@@ -8,7 +8,7 @@ import '@fontsource/martian-mono/400.css';
 import '@fontsource/martian-mono/500.css';
 import '../styles/tokens.css';
 import '../styles/base.css';
-import { SITE, CONTACTS } from '../data/site';
+import { SITE } from '../data/site';
 
 interface Props {
   title?: string;
@@ -21,16 +21,15 @@ const ogImage = new URL('/og.png', SITE.url).href;
 
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'LocalBusiness',
+  '@type': 'WebSite',
   name: SITE.name,
   url: SITE.url,
   description: SITE.description,
-  telephone: CONTACTS.phone,
-  email: CONTACTS.email,
-  address: {
-    '@type': 'PostalAddress',
-    addressLocality: SITE.city,
-    streetAddress: CONTACTS.address,
+  inLanguage: 'ru-RU',
+  creator: {
+    '@type': 'Organization',
+    name: SITE.legalName,
+    sameAs: 'https://t.me/winteri9',
   },
 };
 ---

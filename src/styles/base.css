@@ -210,10 +210,19 @@ p {
   --button-fg: var(--ink);
   --button-line: var(--accent);
 }
-
 .button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
+}
+
+.button.is-active {
+  background: var(--accent);
+  color: var(--ink);
+  border-color: var(--accent);
+}
+
+.button.is-active .button__dot {
+  background: var(--ink);
 }
 
 .button__dot {

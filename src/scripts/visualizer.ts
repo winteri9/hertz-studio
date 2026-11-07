@@ -1,17 +1,21 @@
 /**
  * HERTZ — сигнальный визуализатор.
  *
- * До микрофона: математическая волна, которая живёт сама.
- * После клика: getUserMedia → AnalyserNode (fftSize 256 → 128 полос) → canvas.
+ * Источники: демо-волна, микрофон, загруженный аудиофайл, захват звука экрана.
+ * Один AudioContext и один AnalyserNode, источники переключаются без перезагрузки страницы.
  * 30 fps через setTimeout, пауза в неактивной вкладке, статичный постер при reduce.
- * Микрофон не включается без действия пользователя.
  */
 
 const BAR_COUNT = 128;
 const TARGET_FPS = 30;
 const FRAME_MS = 1000 / TARGET_FPS;
+const DEMO_STATUS = 'Демо-сигнал · источник не выбран';
+const MIC_ERROR = 'Микрофон недоступен. Разреши доступ в настройках браузера';
+const DISPLAY_ERROR = 'Звук с экрана не передан. При захвате включи «Поделиться звуком»';
+const FILE_ERROR = 'Не удалось воспроизвести файл. Выбери MP3, WAV или OGG';
 
-type Mode = 'demo' | 'live';
+type SourceMode = 'demo' | 'mic' | 'file' | 'display';
+type LiveMode = Exclude<SourceMode, 'demo'>;
 
 const clamp = (value: number, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 
@@ -56,11 +60,15 @@ export function initVisualizer() {
   const root = document.querySelector<HTMLElement>('[data-visualizer]');
   const hero = document.querySelector<HTMLElement>('.hero');
   const canvas = document.querySelector<HTMLCanvasElement>('[data-canvas]');
-  const button = document.querySelector<HTMLButtonElement>('[data-mic-toggle]');
-  const label = document.querySelector<HTMLElement>('[data-mic-label]');
+  const micButton = document.querySelector<HTMLButtonElement>('[data-mic-toggle]');
+  const micLabel = document.querySelector<HTMLElement>('[data-mic-label]');
+  const fileButton = document.querySelector<HTMLButtonElement>('[data-file-trigger]');
+  const fileLabel = document.querySelector<HTMLElement>('[data-file-label]');
+  const fileInput = document.querySelector<HTMLInputElement>('[data-file-input]');
+  const displayButton = document.querySelector<HTMLButtonElement>('[data-display-toggle]');
+  const displayLabel = document.querySelector<HTMLElement>('[data-display-label]');
   const status = document.querySelector<HTMLElement>('[data-mic-status]');
   const modeLabel = document.querySelector<HTMLElement>('[data-viz-mode]');
-  const dot = document.querySelector<HTMLElement>('[data-mic-dot]');
 
   if (!root || !canvas) return;
 
@@ -78,12 +86,15 @@ export function initVisualizer() {
   let width = 0;
   let height = 0;
   let dpr = 1;
-  let mode: Mode = 'demo';
-  let stream: MediaStream | null = null;
+  let mode: SourceMode = 'demo';
   let audioContext: AudioContext | null = null;
   let analyser: AnalyserNode | null = null;
-  let source: MediaStreamAudioSourceNode | null = null;
-  let muteGain: GainNode | null = null;
+  let monitorGain: GainNode | null = null;
+  let stream: MediaStream | null = null;
+  let streamSource: MediaStreamAudioSourceNode | null = null;
+  let audioEl: HTMLAudioElement | null = null;
+  let fileSource: MediaElementAudioSourceNode | null = null;
+  let fileUrl: string | null = null;
   let frequencyData: Uint8Array<ArrayBuffer> | null = null;
   let timer: number | null = null;
   let lastDraw = 0;
@@ -96,14 +107,53 @@ export function initVisualizer() {
     status.dataset.state = state;
   };
 
-  const setButton = (text: string, pressed: boolean) => {
-    if (!button) return;
-    button.setAttribute('aria-pressed', String(pressed));
-    if (label) label.textContent = text;
-  };
-
   const setModeLabel = (text: string) => {
     if (modeLabel) modeLabel.textContent = text;
+  };
+
+  const setButtonState = (nextMode: SourceMode) => {
+    mode = nextMode;
+    const isMic = nextMode === 'mic';
+    const isFile = nextMode === 'file';
+    const isDisplay = nextMode === 'display';
+
+    for (const [button, active] of [
+      [micButton, isMic],
+      [fileButton, isFile],
+      [displayButton, isDisplay],
+    ] as const) {
+      button?.classList.toggle('is-active', active);
+      button?.setAttribute('aria-pressed', String(active));
+    }
+
+    if (micLabel) micLabel.textContent = isMic ? 'Остановить микрофон' : 'Активировать микрофон';
+    if (fileLabel) fileLabel.textContent = isFile ? 'Трек играет' : 'Загрузить трек';
+    if (displayLabel) {
+      displayLabel.textContent = isDisplay ? 'Остановить захват' : 'Захватить звук с экрана';
+    }
+
+    const labels: Record<SourceMode, string> = {
+      demo: 'demo / 128 bands',
+      mic: 'mic / 128 bands',
+      file: 'file / 128 bands',
+      display: 'display / 128 bands',
+    };
+    setModeLabel(labels[nextMode]);
+  };
+
+  const setDemoUi = (message = DEMO_STATUS) => {
+    setButtonState('demo');
+    setStatus(message, 'demo');
+  };
+
+  const setLiveUi = (nextMode: LiveMode, message: string) => {
+    setButtonState(nextMode);
+    setStatus(message, 'live');
+  };
+
+  const setError = (message: string) => {
+    setButtonState('demo');
+    setStatus(message, 'error');
   };
 
   const resize = () => {
@@ -118,8 +168,7 @@ export function initVisualizer() {
   };
 
   const readTargets = (now: number) => {
-    const time = now / 1000;
-    if (mode === 'live' && analyser && frequencyData) {
+    if (mode !== 'demo' && analyser && frequencyData) {
       analyser.getByteFrequencyData(frequencyData);
       for (let i = 0; i < BAR_COUNT; i += 1) {
         const raw = frequencyData[i] / 255;
@@ -128,6 +177,7 @@ export function initVisualizer() {
       return;
     }
 
+    const time = now / 1000;
     const energy = 0.72 + scrolling * 0.28;
     for (let i = 0; i < BAR_COUNT; i += 1) {
       const p = i / (BAR_COUNT - 1);
@@ -154,7 +204,6 @@ export function initVisualizer() {
     for (let i = 0; i < BAR_COUNT; i += 1) {
       const target = targets[i];
       const current = levels[i];
-      // Атака быстрее спада — так бары реагируют, но не дёргаются.
       const factor = target > current ? 0.34 : 0.14;
       levels[i] = current + (target - current) * factor;
 
@@ -215,38 +264,56 @@ export function initVisualizer() {
     }
   };
 
-  const stopAudio = async () => {
-    stream?.getTracks().forEach((track) => track.stop());
-    source?.disconnect();
-    analyser?.disconnect();
-    muteGain?.disconnect();
-    if (audioContext && audioContext.state !== 'closed') {
-      await audioContext.close();
+  const ensureAudio = async () => {
+    if (!audioContext) {
+      const AudioCtor =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!AudioCtor) throw new Error('AudioContext is not supported');
+
+      audioContext = new AudioCtor();
+      analyser = audioContext.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.72;
+
+      monitorGain = audioContext.createGain();
+      monitorGain.gain.value = 0;
+      analyser.connect(monitorGain);
+      monitorGain.connect(audioContext.destination);
+
+      frequencyData = new Uint8Array(analyser.frequencyBinCount);
     }
+
+    if (audioContext.state === 'suspended') await audioContext.resume();
+  };
+
+  const stopSource = () => {
+    stream?.getTracks().forEach((track) => track.stop());
+    streamSource?.disconnect();
     stream = null;
-    audioContext = null;
-    analyser = null;
-    source = null;
-    muteGain = null;
-    frequencyData = null;
+    streamSource = null;
+
+    if (audioEl) {
+      audioEl.pause();
+      audioEl.currentTime = 0;
+    }
+
+    if (fileUrl) {
+      URL.revokeObjectURL(fileUrl);
+      fileUrl = null;
+    }
+
+    if (monitorGain) monitorGain.gain.value = 0;
     mode = 'demo';
   };
 
-  const resetDemo = () => {
-    setButton('Активировать микрофон', false);
-    setStatus('Демо-сигнал · микрофон выключен', 'demo');
-    setModeLabel('demo / 128 bands');
-    if (dot) dot.style.background = '';
+  const stopAndDemo = (message = DEMO_STATUS) => {
+    stopSource();
+    setDemoUi(message);
+    startLoop();
   };
 
-  const showError = () => {
-    setButton('Попробовать снова', false);
-    setStatus('Микрофон недоступен. Разреши доступ в настройках браузера', 'error');
-    setModeLabel('demo / 128 bands');
-    if (dot) dot.style.background = '';
-  };
-
-  const enableMic = async () => {
+  const startMic = async () => {
     if (busy) return;
     busy = true;
 
@@ -255,59 +322,132 @@ export function initVisualizer() {
         throw new Error('getUserMedia is not supported');
       }
 
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const next = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stopSource();
+      stream = next;
+      await ensureAudio();
+      if (!audioContext || !analyser) throw new Error('Analyser is not available');
 
-      const AudioCtor =
-        window.AudioContext ||
-        (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-      if (!AudioCtor) throw new Error('AudioContext is not supported');
+      streamSource = audioContext.createMediaStreamSource(next);
 
-      audioContext = new AudioCtor();
-      await audioContext.resume();
+      streamSource.connect(analyser);
+      if (monitorGain) monitorGain.gain.value = 0;
 
-      analyser = audioContext.createAnalyser();
-      analyser.fftSize = 256;
-      analyser.smoothingTimeConstant = 0.72;
+      next.getAudioTracks()[0]?.addEventListener('ended', () => {
+        if (mode === 'mic') stopAndDemo('Микрофон отключён · демо-сигнал');
+      });
 
-      source = audioContext.createMediaStreamSource(stream);
-      muteGain = audioContext.createGain();
-      muteGain.gain.value = 0;
-      source.connect(analyser);
-      analyser.connect(muteGain);
-      muteGain.connect(audioContext.destination);
-
-      frequencyData = new Uint8Array(analyser.frequencyBinCount);
-      mode = 'live';
-
-      setButton('Остановить микрофон', true);
-      setStatus('Микрофон активен · сигнал идёт с пульта', 'live');
-      setModeLabel('mic / 128 bands');
-      if (dot) dot.style.background = 'var(--accent)';
+      setLiveUi('mic', 'Микрофон активен · сигнал идёт с микрофона');
       startLoop();
     } catch {
-      await stopAudio();
-      showError();
+      stopSource();
+      setError(MIC_ERROR);
       startLoop();
     } finally {
       busy = false;
     }
   };
 
-  const disableMic = async () => {
+  const startDisplay = async () => {
     if (busy) return;
     busy = true;
-    await stopAudio();
-    resetDemo();
-    startLoop();
-    busy = false;
+
+    try {
+      if (!navigator.mediaDevices?.getDisplayMedia) {
+        throw new Error('getDisplayMedia is not supported');
+      }
+
+      const next = await navigator.mediaDevices.getDisplayMedia({ audio: true, video: true });
+      if (!next.getAudioTracks().length) {
+        next.getTracks().forEach((track) => track.stop());
+        throw new Error('No audio track');
+      }
+
+      stopSource();
+      stream = next;
+      await ensureAudio();
+      if (!audioContext || !analyser) throw new Error('Analyser is not available');
+
+      streamSource = audioContext.createMediaStreamSource(next);
+
+      streamSource.connect(analyser);
+      if (monitorGain) monitorGain.gain.value = 0;
+
+      next.getVideoTracks()[0]?.addEventListener('ended', () => {
+        if (mode === 'display') stopAndDemo('Захват остановлен · демо-сигнал');
+      });
+
+      setLiveUi('display', 'Захват экрана активен · звук вкладки');
+      startLoop();
+    } catch {
+      stopSource();
+      setError(DISPLAY_ERROR);
+      startLoop();
+    } finally {
+      busy = false;
+    }
   };
 
-  button?.addEventListener('click', () => {
-    if (mode === 'live') {
-      void disableMic();
-    } else {
-      void enableMic();
+  const startFile = async (file: File) => {
+    if (busy) return;
+    if (file.type && !file.type.startsWith('audio/')) {
+      stopSource();
+      setError(FILE_ERROR);
+      return;
     }
+
+    busy = true;
+    try {
+      stopSource();
+      await ensureAudio();
+      if (!audioContext || !analyser) throw new Error('Analyser is not available');
+
+      if (!audioEl) {
+        audioEl = document.createElement('audio');
+        audioEl.preload = 'auto';
+        audioEl.addEventListener('ended', () => {
+          if (mode === 'file') stopAndDemo('Трек завершён · демо-сигнал');
+        });
+      }
+
+      if (!fileSource) {
+        fileSource = audioContext.createMediaElementSource(audioEl);
+        fileSource.connect(analyser);
+      }
+
+      fileUrl = URL.createObjectURL(file);
+      audioEl.src = fileUrl;
+      audioEl.currentTime = 0;
+      if (monitorGain) monitorGain.gain.value = 1;
+
+      setLiveUi('file', `Трек: ${file.name} · играет`);
+      await audioEl.play();
+      startLoop();
+    } catch {
+      stopSource();
+      setError(FILE_ERROR);
+      startLoop();
+    } finally {
+      busy = false;
+    }
+  };
+
+  micButton?.addEventListener('click', () => {
+    if (mode === 'mic') stopAndDemo();
+    else void startMic();
+  });
+
+  displayButton?.addEventListener('click', () => {
+    if (mode === 'display') stopAndDemo('Захват остановлен · демо-сигнал');
+    else void startDisplay();
+  });
+
+  fileButton?.addEventListener('click', () => fileInput?.click());
+
+  fileInput?.addEventListener('change', () => {
+    const file = fileInput.files?.[0];
+    fileInput.value = '';
+    if (file) void startFile(file);
   });
 
   const onScroll = () => {
@@ -327,39 +467,34 @@ export function initVisualizer() {
   };
 
   const onVisibility = () => {
-    if (document.visibilityState === 'visible') {
-      startLoop();
-    } else {
-      stopLoop();
-    }
+    if (document.visibilityState === 'visible') startLoop();
+    else stopLoop();
   };
 
   if (reduce) {
     root.classList.add('is-static');
-    setButton('Визуализация отключена', false);
-    if (button) button.disabled = true;
+    setButtonState('demo');
+    if (micButton) micButton.disabled = true;
+    if (fileButton) fileButton.disabled = true;
+    if (displayButton) displayButton.disabled = true;
+    if (micLabel) micLabel.textContent = 'Визуализация отключена';
     setStatus('Уменьшенное движение: статичный сигнал', 'demo');
     setModeLabel('static / 128 bands');
-    const hideWhenPastHero = () => {
-      const heroHeight = hero?.offsetHeight ?? window.innerHeight;
-      root.style.opacity = window.scrollY > heroHeight * 0.9 ? '0' : '1';
-    };
     resize();
     drawPoster();
-    hideWhenPastHero();
-    window.addEventListener('scroll', hideWhenPastHero, { passive: true });
     return;
   }
 
   document.addEventListener('visibilitychange', onVisibility);
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', resize, { passive: true });
+  window.addEventListener('pagehide', () => stopSource());
 
   const observer = new ResizeObserver(resize);
   observer.observe(canvas);
 
   resize();
   onScroll();
-  resetDemo();
+  setDemoUi();
   startLoop();
 }

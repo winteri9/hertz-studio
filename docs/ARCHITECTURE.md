@@ -7,10 +7,11 @@
 ```
 src/
   data/
-    site.ts          SITE, CONTACTS, NAV, SOCIALS, HERO_SPECS
+    site.ts          SITE, CONTACTS, NAV, HERO_SPECS
     services.ts      Service + SERVICES (4)
     releases.ts      Release + RELEASES (4, cover: PhotoId)
     equipment.ts     EquipmentItem + EQUIPMENT (5)
+    pricing.ts       PRICING_SERVICES + PRICING_DURATIONS
     photos.ts        PHOTO_FILES + PhotoId + PHOTO_ALTS
   components/
     SiteHeader.astro
@@ -19,12 +20,15 @@ src/
       Services.astro  сетка 01—04
       Releases.astro  4 обложки + VHS на hover
       Equipment.astro marquee + список
+      PricingQuiz.astro 3 шага: услуга → длительность → цена
+      Concept.astro   светлая плашка VOIDCODE + Telegram
       Footer.astro    контакты, кредиты, огромный HERTZ
   layouts/BaseLayout.astro   meta, OG, JSON-LD, шрифты, js/reduce
   scripts/
     main.ts          единая точка входа
     motion.ts        GSAP + ScrollTrigger
-    visualizer.ts    Canvas 2D + Web Audio API
+    visualizer.ts    Canvas 2D + Web Audio API (mic / file / display)
+    pricing.ts       демо-расчёт без библиотек
   styles/
     tokens.css       цвет и поверхности
     base.css         сброс, типографика, кнопки, состояния
@@ -57,8 +61,8 @@ tools/               проверки и фото
 
 | Класс | Фон | Где |
 |---|---|---|
-| `surface-ink` | `--ink` `#0A0A0A` | Hero, Releases, Footer |
-| `surface-paper` | `--paper` `#EAEAEA` | Services, Equipment |
+| `surface-ink` | `--ink` `#0A0A0A` | Hero, Releases, PricingQuiz, Footer |
+| `surface-paper` | `--paper` `#EAEAEA` | Services, Equipment, Concept |
 
 Текст: `--paper` на ink (16.46:1), `--ink` на paper (16.46:1), `--muted` на ink (6.16:1),
 `--muted-ink` на paper (5.70:1). Акцент текстом на светлом — `--accent-ink` (7.92:1),
@@ -69,11 +73,12 @@ tools/               проверки и фото
 - `Release.cover: PhotoId` — контракт между релизом и `PHOTO_FILES`.
 - `PHOTO_FILES` — единственный список локальных файлов.
 - `photos.json` — автор, профиль, ссылка на фото, размеры. `Footer.astro` выводит кредиты.
-- `site.ts` — контакты помечены как демонстрационные.
+- `site.ts` — только Москва и Telegram @winteri9; выдуманных адресов, телефонов и соцсетей нет.
+- `pricing.ts` — ставки и длительности демо-калькулятора; это не прайс студии.
 
 ## Scripts
 
-`main.ts` вызывает `initVisualizer()` и `initMotion()`.
+`main.ts` вызывает `initVisualizer()`, `initMotion()` и `initPricingQuiz()`.
 
 `motion.ts`:
 - интро: маска HERTZ, header, `[data-intro]`;
@@ -85,12 +90,13 @@ tools/               проверки и фото
 
 `visualizer.ts`:
 - 128 баров, `lerp` атаки/спада, градиент lime → red;
-- fallback-синусоида до микрофона;
-- `getUserMedia` только по клику; при отказе — текст и «Попробовать снова»;
-- `fftSize = 256`, `AnalyserNode`, mute gain в destination (без обратной связи);
+- три источника: микрофон, локальный аудиофайл, `getDisplayMedia` со звуком вкладки;
+- один `AudioContext` и `AnalyserNode`, переключение без перезагрузки;
+- активный источник подсвечивается лаймом, ошибки доступа — текстом;
+- `fftSize = 256`, mute gain для mic/display (без обратной связи), gain 1 для файла;
 - `setTimeout` 30 fps, пауза на `visibilitychange`;
 - scroll: scale 1 → 0.6, dock в правый нижний угол, `is-docked` уменьшает панель;
-- reduce: статичный постер, кнопка отключена.
+- reduce: статичный постер, кнопки источников отключены.
 
 ## Проверки
 
@@ -105,5 +111,5 @@ tools/               проверки и фото
 ## Открыто
 
 - Рабочая форма/бэкенд и 152-ФЗ.
-- Реальный домен и контакты.
+- HERTZ — концепт без физического адреса и соцсетей; связь только Telegram.
 - Контент каталога — демонстрационный.

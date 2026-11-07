@@ -24,13 +24,17 @@
 
 ## Features
 
-- **Микрофонный визуализатор** — 128 частотных полос на Canvas + Web Audio API.
-  Микрофон включается только по клику. Есть fallback-волна, обработка отказа доступа,
-  ограничение 30 fps, пауза в неактивной вкладке и статичный постер при `reduce`.
+- **Аудиовизуализатор · три источника** — микрофон, локальный аудиофайл и захват
+  звука вкладки. 128 полос на Canvas + Web Audio API, активный источник подсвечен
+  неоновым лаймом. Есть fallback-волна, обработка отказов, 30 fps, пауза в неактивной
+  вкладке и статичный постер при `reduce`.
 - **GSAP ScrollTrigger** — выезд HERTZ из-под маски, лёгкий параллакс фото пульта,
   последовательное появление услуг и закрывающего слова в футере.
 - **VHS-эффекты** — RGB-сдвиг, скан-линии и масштабирование обложки только на hover.
   До наведения каталог остаётся монохромным и тихим.
+- **Калькулятор записи** — три шага: услуга, длительность, демо-цена. Ставки вынесены
+  в `src/data/pricing.ts`, результат собирается клиентским скриптом.
+- **Концепт-блок** — честная светлая плашка VOIDCODE с CTA в Telegram @winteri9.
 - **Unsplash-фото** — 6 локальных кадров с атрибуцией в `assets/photos/photos.json`.
   Платные Unsplash+ отсеиваются, размеры и авторы проверяются машинно.
 - **Anti-slop** — один кислотный акцент, без градиентного текста, свечений, стекла и
@@ -64,12 +68,12 @@ npm run verify       # типы, сборка, фото, контраст, ск�
 
 ```text
 src/
-  data/              факты: site, services, releases, equipment, photos
+  data/              факты: site, services, releases, equipment, pricing, photos
   components/
     SiteHeader.astro
-    sections/        Hero, Services, Releases, Equipment, Footer
+    sections/        Hero, Services, Releases, Equipment, PricingQuiz, Concept, Footer
   layouts/BaseLayout.astro
-  scripts/           main, motion (GSAP), visualizer (Canvas + Web Audio)
+  scripts/           main, motion (GSAP), visualizer (Canvas/Web Audio), pricing
   styles/            tokens.css, base.css
   pages/index.astro  порядок секций
 assets/photos/       6 фото Unsplash + photos.json с атрибуцией
@@ -91,5 +95,6 @@ screenshots/         финальные снимки 1440 и 390
 
 ## Важно
 
-Контакты и адрес — демонстрационные. Микрофон включается только по клику и только на
-`localhost`/HTTPS: браузер требует secure context для `getUserMedia`.
+HERTZ — концепт VOIDCODE, не реальная студия. Физического адреса, телефона и соцсетей
+нет; связь — Telegram [@winteri9](https://t.me/winteri9). Микрофон, файл и захват экрана
+требуют разрешения браузера; звук вкладки зависит от выбранного источника.

@@ -39,15 +39,14 @@ const posterBars = Array.from({ length: 128 }, (_, index) => {
     />
     <div class="hero__scrim"></div>
     <div class="hero__scanlines"></div>
+    <div class="hero__grain" aria-hidden="true"></div>
   </div>
 
   <div class="hero__inner container">
     <div class="hero__topline" data-intro>
       <p class="eyebrow">Студия звукозаписи</p>
-      <p class="hero__locale mono">
-        {SITE.city} <span aria-hidden="true">/</span> {SITE.coordinates}
-      </p>
-      <p class="hero__est mono">Est. {SITE.founded}</p>
+      <p class="hero__locale mono">{SITE.city}</p>
+      <p class="hero__est mono">{SITE.conceptLabel}</p>
     </div>
 
     <div class="hero__title-row">
@@ -91,9 +90,23 @@ const posterBars = Array.from({ length: 128 }, (_, index) => {
             <span class="button__dot" data-mic-dot aria-hidden="true"></span>
             <span data-mic-label>Активировать микрофон</span>
           </button>
+          <button class="button button--ghost" type="button" data-file-trigger aria-pressed="false">
+            <span class="button__dot" aria-hidden="true"></span>
+            <span data-file-label>Загрузить трек</span>
+          </button>
+          <input class="visually-hidden" type="file" accept="audio/*" data-file-input />
+          <button
+            class="button button--ghost"
+            type="button"
+            data-display-toggle
+            aria-pressed="false"
+          >
+            <span class="button__dot" aria-hidden="true"></span>
+            <span data-display-label>Захватить звук с экрана</span>
+          </button>
         </div>
         <p class="hero__status mono" data-mic-status role="status" aria-live="polite">
-          Демо-сигнал · микрофон выключен
+          Демо-сигнал · источник не выбран
         </p>
       </div>
 
@@ -190,6 +203,25 @@ const posterBars = Array.from({ length: 128 }, (_, index) => {
     pointer-events: none;
   }
 
+  .hero__grain {
+    position: absolute;
+    inset: -40%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+    background-size: 220px 220px;
+    opacity: 0.09;
+    mix-blend-mode: soft-light;
+    animation: grainShift 0.8s steps(3) infinite;
+    pointer-events: none;
+  }
+
+  @keyframes grainShift {
+    0% { transform: translate3d(0, 0, 0); }
+    25% { transform: translate3d(-2%, 1%, 0); }
+    50% { transform: translate3d(1%, -2%, 0); }
+    75% { transform: translate3d(2%, 2%, 0); }
+    100% { transform: translate3d(-1%, -1%, 0); }
+  }
+
   .hero__inner {
     position: relative;
     z-index: 2;
@@ -216,10 +248,6 @@ const posterBars = Array.from({ length: 128 }, (_, index) => {
     color: var(--muted);
   }
 
-  .hero__locale span {
-    margin-inline: 8px;
-    color: var(--accent);
-  }
 
   .hero__est {
     justify-self: end;
@@ -297,7 +325,7 @@ const posterBars = Array.from({ length: 128 }, (_, index) => {
   }
 
   .hero__statement {
-    max-width: 640px;
+    max-width: 900px;
   }
 
   .hero__tagline {

@@ -6,7 +6,7 @@
  */
 import { photoCredit } from '../../lib/images';
 import { PHOTO_FILES } from '../../data/photos';
-import { CONTACTS, SITE, SOCIALS } from '../../data/site';
+import { CONTACTS, SITE } from '../../data/site';
 
 const credits = Object.values(PHOTO_FILES)
   .map((file) => photoCredit(file))
@@ -16,12 +16,12 @@ const credits = Object.values(PHOTO_FILES)
 <footer class="footer surface-ink" id="contact" aria-labelledby="contact-title">
   <div class="footer__top container">
     <div class="footer__cta" data-reveal>
-      <p class="section-label"><span>04</span> Контакты</p>
+      <p class="section-label"><span>06</span> Контакты</p>
       <h2 class="footer__title" id="contact-title">
         Есть трек?<br />Сделаем его тяжёлым.
       </h2>
-      <a class="footer__email" href={CONTACTS.emailHref}>
-        <span>{CONTACTS.email}</span>
+      <a class="footer__email" href={CONTACTS.telegramHref} target="_blank" rel="noopener">
+        <span>Telegram / {CONTACTS.telegram}</span>
         <span aria-hidden="true">↗</span>
       </a>
     </div>
@@ -29,40 +29,28 @@ const credits = Object.values(PHOTO_FILES)
     <div class="footer__details" data-reveal>
       <div class="footer__group">
         <p class="footer__label mono">Студия</p>
-        <a class="footer__text" href={CONTACTS.addressHref} target="_blank" rel="noopener">
-          {CONTACTS.address}
-        </a>
-        <p class="footer__muted mono">{CONTACTS.hours}</p>
+        <p class="footer__text">{CONTACTS.city}</p>
+        <p class="footer__muted mono">Физического адреса нет</p>
       </div>
 
       <div class="footer__group">
         <p class="footer__label mono">Связь</p>
-        <a class="footer__text" href={CONTACTS.phoneHref}>{CONTACTS.phone}</a>
-        <a class="footer__muted mono" href={CONTACTS.telegramHref} target="_blank" rel="noopener">
+        <a class="footer__text" href={CONTACTS.telegramHref} target="_blank" rel="noopener">
           Telegram / {CONTACTS.telegram}
         </a>
+        <p class="footer__muted mono">Единственный канал связи</p>
       </div>
 
       <div class="footer__group">
-        <p class="footer__label mono">Соцсети</p>
-        <ul class="footer__socials" role="list">
-          {
-            SOCIALS.map((social) => (
-              <li>
-                <a href={social.href} target="_blank" rel="noopener">
-                  {social.label}
-                  <span aria-hidden="true">↗</span>
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
+        <p class="footer__label mono">Проект</p>
+        <p class="footer__text">{SITE.name} — concept</p>
+        <p class="footer__muted mono">Сделан VOIDCODE</p>
     </div>
+  </div>
   </div>
 
   <div class="footer__legal container">
-    <p class="mono">© 2026 {SITE.legalName}</p>
+    <p class="mono">© 2026 {SITE.legalName} · {SITE.name} concept</p>
     <p class="mono footer__credits">
       Фото:
       {
@@ -77,7 +65,7 @@ const credits = Object.values(PHOTO_FILES)
       }
       / Unsplash
     </p>
-    <p class="mono footer__demo">Демонстрационный кейс VOIDCODE</p>
+    <p class="mono footer__demo">HERTZ — концепт, не реальная студия</p>
   </div>
 
   <div class="footer__word-wrap" aria-hidden="true">
@@ -181,31 +169,6 @@ const credits = Object.values(PHOTO_FILES)
     color: var(--accent);
   }
 
-  .footer__socials {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 18px;
-  }
-
-  .footer__socials a {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-family: var(--font-mono);
-    font-size: 9px;
-    line-height: 1.5;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--paper);
-  }
-
-  .footer__socials a span {
-    color: var(--accent);
-  }
-
-  .footer__socials a:hover {
-    color: var(--accent);
-  }
 
   .footer__legal {
     position: relative;

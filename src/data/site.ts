@@ -1,35 +1,28 @@
 /**
  * Факты сайта — единственный источник правды.
  *
- * Источник: бриф HERTZ (демонстрационный кейс VOIDCODE).
- * Контакты, адрес и часы работы — демонстрационные, не выдаются за реальные реквизиты.
+ * HERTZ — концепт VOIDCODE. Физического адреса, телефона, почты и соцсетей нет.
+ * Реальный канал связи — Telegram @winteri9.
  * Правило: нет факта — нет строки.
  */
 
 export const SITE = {
   name: 'HERTZ',
-  legalName: 'HERTZ STUDIO',
-  url: 'https://hertz.studio',
+  legalName: 'VOIDCODE',
+  url: 'https://hertz-studio.vercel.app',
   locale: 'ru_RU',
-  title: 'HERTZ — студия звукозаписи',
+  title: 'HERTZ — концепт студии звукозаписи',
   description:
-    'Запись, сведение, мастеринг и продакшн. Студия полного цикла в Москве. Звук, который имеет вес.',
+    'Концепт студии звукозаписи: запись, сведение, мастеринг и продакшн. Демонстрационный кейс VOIDCODE.',
   tagline: 'Звук, который имеет вес',
   city: 'Москва',
-  coordinates: '55.747° N / 37.664° E',
-  founded: '2016',
+  conceptLabel: 'Concept / VOIDCODE',
 } as const;
 
 export const CONTACTS = {
-  phone: '+7 (495) 120-18-40',
-  phoneHref: 'tel:+74951201840',
-  email: 'hello@hertz.studio',
-  emailHref: 'mailto:hello@hertz.studio',
-  address: 'Москва, Нижняя Сыромятническая, 10, стр. 2',
-  addressHref: 'https://yandex.ru/maps/?text=Москва%2C%20Нижняя%20Сыромятническая%2C%2010',
-  telegram: '@hertzstudio',
-  telegramHref: 'https://t.me/hertzstudio',
-  hours: 'Пн–Сб, 11:00–23:00',
+  city: 'Москва',
+  telegram: '@winteri9',
+  telegramHref: 'https://t.me/winteri9',
 } as const;
 
 /** Навигация. Только якоря на главной — отдельных страниц в кейсе нет. */
@@ -37,13 +30,8 @@ export const NAV = [
   { label: 'Услуги', href: '#services' },
   { label: 'Релизы', href: '#releases' },
   { label: 'Оборудование', href: '#equipment' },
+  { label: 'Концепт', href: '#concept' },
   { label: 'Контакты', href: '#contact' },
-] as const;
-
-export const SOCIALS = [
-  { label: 'Telegram', href: 'https://t.me/hertzstudio' },
-  { label: 'VK', href: 'https://vk.com/hertzstudio' },
-  { label: 'YouTube', href: 'https://youtube.com/@hertzstudio' },
 ] as const;
 
 /** Технические подписи первого экрана: это метки интерфейса, а не обещания студии. */
