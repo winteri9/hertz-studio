@@ -199,6 +199,7 @@ p {
   --button-line: var(--paper);
 }
 
+
 .button--ghost {
   --button-bg: transparent;
   --button-fg: var(--paper);

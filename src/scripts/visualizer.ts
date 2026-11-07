@@ -127,7 +127,7 @@ export function initVisualizer() {
     }
 
     if (micLabel) micLabel.textContent = isMic ? 'Остановить микрофон' : 'Активировать микрофон';
-    if (fileLabel) fileLabel.textContent = isFile ? 'Трек играет' : 'Загрузить трек';
+    if (fileLabel) fileLabel.textContent = isFile ? 'Остановить трек' : 'Загрузить трек';
     if (displayLabel) {
       displayLabel.textContent = isDisplay ? 'Остановить захват' : 'Захватить звук с экрана';
     }
@@ -442,7 +442,10 @@ export function initVisualizer() {
     else void startDisplay();
   });
 
-  fileButton?.addEventListener('click', () => fileInput?.click());
+  fileButton?.addEventListener('click', () => {
+    if (mode === 'file') stopAndDemo('Трек остановлен · демо-сигнал');
+    else fileInput?.click();
+  });
 
   fileInput?.addEventListener('change', () => {
     const file = fileInput.files?.[0];
