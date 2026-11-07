@@ -1,9 +1,57 @@
-# HERTZ — студия звукозаписи
+<div align="center">
 
-Премиальный лендинг студии звукозаписи. Флагманский кейс VOIDCODE: архитектура, типографика,
-GSAP-движение и аудиовизуализатор на Canvas.
+# HERTZ Studio
 
-**Слоган:** «Звук, который имеет вес».
+**Signature case · премиальный лендинг студии звукозаписи**
+
+Запись, сведение, мастеринг и продакшн. Тёмный Hero, редакционная типографика,
+живой аудиосигнал и VHS-каталог релизов.
+
+[Vercel Link](ВСТАВЬ_ССЫЛКУ_ПОСЛЕ_ДЕПЛОЯ)
+
+[![Astro](https://img.shields.io/badge/Astro-7.4.7-FF5D01?logo=astro&logoColor=white)](https://astro.build)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0.3-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![GSAP](https://img.shields.io/badge/GSAP-3.15-88CE02?logo=greensock&logoColor=111)](https://gsap.com)
+[![Web Audio API](https://img.shields.io/badge/Web_Audio_API-AnalyserNode-D0F43C?logo=webaudio&logoColor=111)](https://developer.mozilla.org/docs/Web/API/Web_Audio_API)
+
+`npm run verify` — 10/10 проверок
+
+</div>
+
+## Live Demo
+
+После деплоя на Vercel заменить плейсхолдер в блоке выше:
+
+```text
+[Vercel Link](ВСТАВЬ_ССЫЛКУ_ПОСЛЕ_ДЕПЛОЯ)
+```
+
+на прямую ссылку проекта, например:
+
+```text
+[Vercel Link](https://hertz-studio.vercel.app)
+```
+
+## Features
+
+- **Микрофонный визуализатор** — 128 частотных полос на Canvas + Web Audio API.
+  Микрофон включается только по клику. Есть fallback-волна, обработка отказа доступа,
+  ограничение 30 fps, пауза в неактивной вкладке и статичный постер при `reduce`.
+- **GSAP ScrollTrigger** — выезд HERTZ из-под маски, лёгкий параллакс фото пульта,
+  последовательное появление услуг и закрывающего слова в футере.
+- **VHS-эффекты** — RGB-сдвиг, скан-линии и масштабирование обложки только на hover.
+  До наведения каталог остаётся монохромным и тихим.
+- **Unsplash-фото** — 6 локальных кадров с атрибуцией в `assets/photos/photos.json`.
+  Платные Unsplash+ отсеиваются, размеры и авторы проверяются машинно.
+- **Anti-slop** — один кислотный акцент, без градиентного текста, свечений, стекла и
+  emoji-иконок. Богатство — в типографике, реальных фото и сигнале.
+
+## Preview
+
+<p align="center">
+  <img src="screenshots/desktop-1440-hero.png" alt="HERTZ — desktop 1440" width="76%">
+  <img src="screenshots/mobile-390-hero.png" alt="HERTZ — mobile 390" width="22%">
+</p>
 
 ## Стек
 
@@ -24,7 +72,7 @@ npm run verify       # типы, сборка, фото, контраст, ск�
 
 ## Структура
 
-```
+```text
 src/
   data/              факты: site, services, releases, equipment, photos
   components/
