@@ -1,0 +1,407 @@
+---
+/**
+ * Equipment — оборудование.
+ * Бегущая строка декоративная (aria-hidden): тот же список читается ниже.
+ * Марки останавливается при наведении и отключается в reduce.
+ */
+import { Image } from 'astro:assets';
+import { localPhoto } from '../../lib/images';
+import { PHOTO_FILES, PHOTO_ALTS } from '../../data/photos';
+import { EQUIPMENT } from '../../data/equipment';
+
+const room = localPhoto(PHOTO_FILES.consoleRoom);
+---
+
+<section class="equipment surface-paper" id="equipment" aria-labelledby="equipment-title">
+  <div class="container">
+    <header class="equipment__head">
+      <p class="section-label" data-reveal><span>03</span> Оборудование</p>
+      <h2 class="equipment__title" id="equipment-title" data-reveal>
+        Инструменты,<br />которые слышно
+      </h2>
+      <div class="equipment__aside" data-reveal>
+        <p>
+          Не коллекция ради коллекции. Каждый прибор здесь решает конкретную задачу: держит низ,
+          показывает середину или добавляет характер, которого нет в плагине.
+        </p>
+        <p class="mono equipment__hint">Hover to pause / 05 units</p>
+      </div>
+    </header>
+  </div>
+
+  <div class="equipment__marquee" aria-hidden="true">
+    <div class="equipment__track">
+      {
+        [0, 1].map(() => (
+          <div class="equipment__group">
+            {EQUIPMENT.map((item, index) => (
+              <span class="equipment__word">
+                <span class="equipment__word-index mono">0{index + 1}</span>
+                <span>{item.name}</span>
+                <span class="equipment__word-cat mono">{item.category}</span>
+              </span>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="equipment__lower">
+      <figure class="equipment__photo" data-reveal>
+        <Image
+          src={room}
+          alt={PHOTO_ALTS.consoleRoom}
+          widths={[480, 720, 960]}
+          sizes="(max-width: 900px) 100vw, 38vw"
+          format="webp"
+          quality={82}
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption class="equipment__caption mono">
+          <span>Control room / HZ-02</span>
+          <span>24 / 96</span>
+        </figcaption>
+      </figure>
+
+      <div class="equipment__content">
+        <p class="equipment__statement" data-reveal>
+          Хороший звук начинается не с плагина. Он начинается с решения: что оставить, что убрать и
+          чем заплатить за характер.
+        </p>
+
+        <ol class="equipment__list" role="list">
+          {
+            EQUIPMENT.map((item, index) => (
+              <li class="equipment__item" data-reveal>
+                <span class="equipment__item-index mono">0{index + 1}</span>
+                <span class="equipment__item-name">{item.name}</span>
+                <span class="equipment__item-cat mono">{item.category}</span>
+                <span class="equipment__item-note">{item.note}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .equipment {
+    padding-block: var(--sec-pad) 0;
+    overflow: hidden;
+  }
+
+  .equipment__head {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 24px;
+    align-items: start;
+    margin-bottom: clamp(42px, 5.4vw, 76px);
+  }
+
+  .equipment__head .section-label {
+    grid-column: 1 / span 3;
+    padding-top: 7px;
+  }
+
+  .equipment__title {
+    grid-column: 1 / span 7;
+    grid-row: 2;
+    font-size: clamp(48px, 7.4vw, 108px);
+    line-height: 0.9;
+  }
+
+  .equipment__aside {
+    grid-column: 9 / span 4;
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding-top: 6px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--fg-muted);
+  }
+
+  .equipment__hint {
+    font-size: 8px;
+    line-height: 1.5;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+
+  .equipment__marquee {
+    overflow: hidden;
+    border-block: 1px solid var(--hairline-light);
+  }
+
+  .equipment__track {
+    display: flex;
+    width: max-content;
+    animation: marquee 44s linear infinite;
+    will-change: transform;
+  }
+
+  .equipment__marquee:hover .equipment__track {
+    animation-play-state: paused;
+  }
+
+  .equipment__group {
+    display: flex;
+    align-items: center;
+  }
+
+  .equipment__word {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 18px;
+    padding: 22px 48px 22px 0;
+    margin-right: 48px;
+    font-family: var(--font-display);
+    font-size: clamp(52px, 6.6vw, 104px);
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: -0.055em;
+    white-space: nowrap;
+    color: var(--ink);
+  }
+
+  .equipment__word-index {
+    font-size: 9px;
+    line-height: 1;
+    letter-spacing: 0.06em;
+    color: var(--accent-ink);
+  }
+
+  .equipment__word-cat {
+    font-size: 8px;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted-ink);
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  .equipment__lower {
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    gap: clamp(28px, 4vw, 64px);
+    align-items: start;
+    padding-block: clamp(56px, 7vw, 110px) var(--sec-pad);
+  }
+
+  .equipment__photo {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    background: var(--ink-2);
+    aspect-ratio: 4 / 5;
+  }
+
+  .equipment__photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 42%;
+    filter: grayscale(1) contrast(1.08) brightness(0.9);
+    transition:
+      transform 1.2s var(--ease),
+      filter 0.6s var(--ease);
+  }
+
+  .equipment__photo:hover img {
+    transform: scale(1.035);
+    filter: grayscale(0.55) contrast(1.08) brightness(1);
+  }
+
+  .equipment__caption {
+    position: absolute;
+    inset: auto 0 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 12px;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 8px;
+    line-height: 1.4;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .equipment__caption span:last-child {
+    color: var(--accent);
+  }
+
+  .equipment__statement {
+    max-width: 640px;
+    margin-bottom: clamp(30px, 4vw, 54px);
+    font-size: clamp(22px, 2.6vw, 36px);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+    color: var(--ink);
+  }
+
+  .equipment__list {
+    border-top: 1px solid var(--line-light);
+  }
+
+  .equipment__item {
+    display: grid;
+    grid-template-columns: 34px minmax(160px, 1.25fr) 96px 1.5fr;
+    gap: 16px;
+    align-items: start;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--hairline-light);
+    transition: background-color 0.25s var(--ease);
+  }
+
+  .equipment__item:hover {
+    background: color-mix(in srgb, var(--ink) 4%, transparent);
+  }
+
+  .equipment__item-index {
+    padding-top: 3px;
+    font-size: 8px;
+    line-height: 1.4;
+    letter-spacing: 0.06em;
+    color: var(--accent-ink);
+  }
+
+  .equipment__item-name {
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .equipment__item-cat {
+    padding-top: 3px;
+    font-size: 8px;
+    line-height: 1.4;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted-ink);
+  }
+
+  .equipment__item-note {
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--muted-ink);
+  }
+
+  @media (max-width: 1000px) {
+    .equipment__head {
+      grid-template-columns: repeat(6, 1fr);
+    }
+
+    .equipment__title {
+      grid-column: 1 / span 5;
+    }
+
+    .equipment__aside {
+      grid-column: 6 / span 1;
+      grid-row: 2;
+    }
+
+    .equipment__aside > p:first-child {
+      display: none;
+    }
+
+    .equipment__lower {
+      grid-template-columns: 1fr;
+    }
+
+    .equipment__photo {
+      max-width: 520px;
+      aspect-ratio: 4 / 3;
+    }
+
+    .equipment__photo img {
+      object-position: 50% 54%;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .equipment {
+      padding-top: clamp(72px, 16vw, 100px);
+    }
+
+    .equipment__head {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .equipment__title {
+      font-size: clamp(44px, 13vw, 64px);
+    }
+
+    .equipment__aside {
+      width: 100%;
+      padding-top: 0;
+    }
+
+    .equipment__aside > p:first-child {
+      display: block;
+      font-size: 13px;
+    }
+
+    .equipment__word {
+      padding-block: 16px;
+      font-size: clamp(44px, 13vw, 64px);
+      gap: 12px;
+      margin-right: 32px;
+      padding-right: 32px;
+    }
+
+    .equipment__lower {
+      padding-block: 48px 96px;
+    }
+
+    .equipment__photo {
+      max-width: none;
+      aspect-ratio: 4 / 5;
+    }
+
+    .equipment__statement {
+      font-size: 24px;
+    }
+
+    .equipment__item {
+      grid-template-columns: 26px 1fr auto;
+      gap: 10px;
+      padding: 14px 0;
+    }
+
+    .equipment__item-name {
+      font-size: 16px;
+    }
+
+    .equipment__item-cat {
+      grid-column: 2;
+      grid-row: 2;
+      padding-top: 0;
+    }
+
+    .equipment__item-note {
+      grid-column: 2 / span 2;
+      grid-row: 3;
+    }
+  }
+</style>

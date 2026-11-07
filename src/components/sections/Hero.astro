@@ -1,0 +1,574 @@
+---
+/**
+ * Hero — первый экран.
+ *
+ * Контракт: один блок макета = этот файл.
+ * Фото пульта — фон с лёгким параллаксом, HERTZ выезжает из-под маски.
+ * Canvas-визуализатор монтируется скриптом и деградирует до CSS-сетки без JS.
+ */
+import { Image } from 'astro:assets';
+import { localPhoto } from '../../lib/images';
+import { PHOTO_FILES } from '../../data/photos';
+import { SITE, HERO_SPECS } from '../../data/site';
+
+const photo = localPhoto(PHOTO_FILES.consoleDetail);
+
+/** Статичный постер для режима без JS: та же волна, только SVG. */
+const posterBars = Array.from({ length: 128 }, (_, index) => {
+  const p = index / 127;
+  const envelope = Math.pow(1 - p, 1.35) * 0.82 + 0.12;
+  const wave = 0.46 + Math.sin(index * 0.31) * 0.25 + Math.sin(index * 0.09 - 1.2) * 0.18;
+  const height = Math.max(2, Math.abs(wave) * envelope * 148);
+  return { x: index * 9.375, y: 160 - height, width: 7.5, height };
+});
+---
+
+<section class="hero surface-ink" id="hero" aria-labelledby="hero-title">
+  <div class="hero__media" aria-hidden="true">
+    <Image
+      class="hero__image"
+      src={photo}
+      alt=""
+      widths={[768, 1200, 1800, 2400]}
+      sizes="100vw"
+      format="webp"
+      quality={82}
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+    />
+    <div class="hero__scrim"></div>
+    <div class="hero__scanlines"></div>
+  </div>
+
+  <div class="hero__inner container">
+    <div class="hero__topline" data-intro>
+      <p class="eyebrow">Студия звукозаписи</p>
+      <p class="hero__locale mono">
+        {SITE.city} <span aria-hidden="true">/</span> {SITE.coordinates}
+      </p>
+      <p class="hero__est mono">Est. {SITE.founded}</p>
+    </div>
+
+    <div class="hero__title-row">
+      <h1 class="hero__title" id="hero-title">
+        <span class="hero__mask">
+          <span class="hero__word">HERTZ</span>
+        </span>
+      </h1>
+
+      <dl class="hero__specs" aria-label="Параметры сигнала">
+        {
+          HERO_SPECS.map((spec) => (
+            <div class="hero__spec">
+              <dt>{spec.label}</dt>
+              <dd class="mono">{spec.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+
+    <div class="hero__bottom">
+      <div class="hero__statement" data-intro>
+        <p class="hero__tagline">{SITE.tagline}</p>
+        <p class="hero__lead">
+          Запись, сведение, мастеринг и продакшн. Одна команда, один сигнал — от первого дубля до
+          релиза.
+        </p>
+
+        <div class="hero__actions">
+          <a class="button button--solid" href="#contact">
+            <span>Забронировать сессию</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+          <button
+            class="button button--ghost"
+            type="button"
+            data-mic-toggle
+            aria-pressed="false"
+          >
+            <span class="button__dot" data-mic-dot aria-hidden="true"></span>
+            <span data-mic-label>Активировать микрофон</span>
+          </button>
+        </div>
+        <p class="hero__status mono" data-mic-status role="status" aria-live="polite">
+          Демо-сигнал · микрофон выключен
+        </p>
+      </div>
+
+      <p class="hero__note mono" data-intro>
+        <span aria-hidden="true">[</span> HZ / SIGNAL MONITOR <span aria-hidden="true">]</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+  <figure class="signal-dock" data-visualizer>
+    <figcaption class="signal__head">
+      <span class="signal__title mono">
+        <span class="signal__live" aria-hidden="true"></span>
+        Signal monitor
+      </span>
+      <span class="signal__mode mono" data-viz-mode>demo / 128 bands</span>
+      <span class="signal__rate mono">30 fps</span>
+    </figcaption>
+
+    <div class="signal__frame">
+      <div class="signal__grid" aria-hidden="true"></div>
+      <svg
+        class="signal__poster"
+        viewBox="0 0 1200 160"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        {posterBars.map((bar) => (
+          <rect x={bar.x} y={bar.y} width={bar.width} height={bar.height} rx="1" />
+        ))}
+      </svg>
+      <canvas id="signal-canvas" class="signal__canvas" data-canvas aria-hidden="true"></canvas>
+    </div>
+
+    <div class="signal__axis mono" aria-hidden="true">
+      <span>20 Hz</span>
+      <span>1 kHz</span>
+      <span>20 kHz</span>
+    </div>
+  </figure>
+
+<style>
+  .hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
+    padding-top: clamp(94px, 11vh, 124px);
+    padding-bottom: clamp(190px, 22vh, 230px);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .hero__media {
+    position: absolute;
+    inset: -6% 0;
+    z-index: -1;
+    overflow: hidden;
+    background: var(--ink);
+  }
+
+  .hero__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 52%;
+    filter: grayscale(0.94) contrast(1.1) brightness(0.54);
+    transform: scale(1.03);
+  }
+
+  .hero__scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--ink) 78%, transparent) 0%,
+        color-mix(in srgb, var(--ink) 18%, transparent) 38%,
+        color-mix(in srgb, var(--ink) 92%, transparent) 100%
+      ),
+      linear-gradient(90deg, color-mix(in srgb, var(--ink) 74%, transparent) 0%, transparent 62%);
+  }
+
+  .hero__scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent 0 3px,
+      color-mix(in srgb, var(--paper) 5%, transparent) 3px 4px
+    );
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  .hero__inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: clamp(28px, 5vh, 52px);
+  }
+
+  .hero__topline {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--hairline-dark);
+  }
+
+  .hero__locale {
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .hero__locale span {
+    margin-inline: 8px;
+    color: var(--accent);
+  }
+
+  .hero__est {
+    justify-self: end;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .hero__title-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 32px;
+    margin-top: auto;
+  }
+
+  .hero__title {
+    margin-left: -0.045em;
+    font-size: clamp(100px, 23vw, 200px);
+    font-weight: 900;
+    line-height: 0.73;
+    letter-spacing: -0.075em;
+    color: var(--paper);
+    white-space: nowrap;
+  }
+
+  .hero__mask {
+    display: block;
+    overflow: hidden;
+    padding-right: 0.05em;
+    padding-bottom: 0.03em;
+  }
+
+  .hero__word {
+    display: block;
+    will-change: transform;
+  }
+
+  .hero__specs {
+    display: flex;
+    gap: clamp(16px, 2.5vw, 32px);
+    padding-bottom: 4px;
+    flex: 0 0 auto;
+  }
+
+  .hero__spec {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 62px;
+  }
+
+  .hero__spec dt {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    line-height: 1.2;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .hero__spec dd {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1;
+    color: var(--paper);
+  }
+
+  .hero__bottom {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .hero__statement {
+    max-width: 640px;
+  }
+
+  .hero__tagline {
+    max-width: 560px;
+    font-size: clamp(30px, 3.2vw, 46px);
+    font-weight: 500;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    color: var(--paper);
+  }
+
+  .hero__lead {
+    max-width: 480px;
+    margin-top: 14px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+  }
+
+  .hero__status {
+    margin-top: 12px;
+    font-size: 9px;
+    line-height: 1.5;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .hero__status[data-state='error'] {
+    color: var(--paper);
+  }
+
+  .hero__status[data-state='live'] {
+    color: var(--accent);
+  }
+
+  .hero__note {
+    padding-bottom: 2px;
+    font-size: 9px;
+    line-height: 1.4;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .hero__note span {
+    color: var(--accent);
+  }
+
+  /* --- пульт сигнала --- */
+  .signal-dock {
+    --viz-scale: 1;
+    opacity: var(--viz-opacity, 1);
+    position: fixed;
+    right: var(--gutter);
+    bottom: 20px;
+    z-index: 30;
+    width: min(760px, calc(100vw - 2 * var(--gutter)));
+    margin: 0;
+    padding: 10px 12px 8px;
+    border: 1px solid var(--hairline-dark);
+    border-top-color: var(--accent);
+    background: var(--ink);
+    transform: scale(var(--viz-scale));
+    transform-origin: right bottom;
+    will-change: transform;
+    pointer-events: none;
+    transition:
+      width 0.35s var(--ease),
+      opacity 0.35s var(--ease);
+  }
+
+  .signal-dock.is-docked {
+    width: min(560px, 78vw);
+    opacity: calc(var(--viz-opacity, 1) * 0.72);
+  }
+
+  .signal-dock.is-docked .signal__axis {
+    display: none;
+  }
+
+  .signal__head {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--hairline-dark);
+  }
+
+  .signal__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--paper);
+  }
+
+  .signal__live {
+    width: 6px;
+    height: 6px;
+    flex: 0 0 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
+  }
+
+  .signal__mode,
+  .signal__rate {
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .signal__frame {
+    position: relative;
+    height: clamp(84px, 12vh, 118px);
+    margin-top: 8px;
+    overflow: hidden;
+  }
+
+  .signal__grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(to top, var(--ink-3) 0 1px, transparent 1px),
+      repeating-linear-gradient(90deg, transparent 0 31px, var(--ink-3) 31px 32px);
+    background-size:
+      100% 25%,
+      auto 100%;
+    opacity: 0.7;
+  }
+
+  .signal__poster {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    fill: var(--accent);
+    opacity: 0.38;
+  }
+
+  .js .signal__poster {
+    display: none;
+  }
+
+  .signal__canvas {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+  }
+
+  .signal__axis {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+    font-size: 8px;
+    line-height: 1.4;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  @media (max-width: 900px) {
+    .hero {
+      padding-bottom: 180px;
+    }
+
+    .hero__topline {
+      grid-template-columns: 1fr auto;
+    }
+
+    .hero__locale {
+      display: none;
+    }
+
+    .hero__title-row {
+      align-items: flex-end;
+    }
+
+    .hero__specs {
+      gap: 14px;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .hero {
+      min-height: 100svh;
+      padding-top: 90px;
+      padding-bottom: 168px;
+    }
+
+    .hero__inner {
+      gap: 34px;
+    }
+
+    .hero__topline {
+      padding-bottom: 10px;
+    }
+
+    .hero__title {
+      font-size: clamp(100px, 24vw, 130px);
+    }
+
+    .hero__specs {
+      display: none;
+    }
+
+    .hero__bottom {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 18px;
+    }
+
+    .hero__tagline {
+      font-size: 32px;
+    }
+
+    .hero__lead {
+      font-size: 13px;
+    }
+
+    .hero__actions {
+      width: 100%;
+      flex-direction: column;
+    }
+
+    .hero__actions .button {
+      width: 100%;
+    }
+
+    .hero__note {
+      display: none;
+    }
+
+    .signal-dock {
+      right: 10px;
+      bottom: 10px;
+      width: calc(100vw - 20px);
+      padding: 8px 10px 6px;
+    }
+
+    .signal__head {
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+    }
+
+    .signal__rate {
+      display: none;
+    }
+
+    .signal__frame {
+      height: 88px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .hero__title {
+      font-size: 84px;
+    }
+  }
+</style>

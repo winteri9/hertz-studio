@@ -1,0 +1,25 @@
+---
+/**
+ * Главная. Порядок секций объявлен здесь и только здесь.
+ * Переставить блок = переставить строку. Удалить блок = убрать импорт.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import Hero from '../components/sections/Hero.astro';
+import Services from '../components/sections/Services.astro';
+import Releases from '../components/sections/Releases.astro';
+import Equipment from '../components/sections/Equipment.astro';
+import Footer from '../components/sections/Footer.astro';
+import { SITE } from '../data/site';
+---
+
+<BaseLayout title={SITE.title} description={SITE.description}>
+  <SiteHeader />
+  <main id="main">
+    <Hero />
+    <Services />
+    <Releases />
+    <Equipment />
+  </main>
+  <Footer />
+</BaseLayout>

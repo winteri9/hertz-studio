@@ -1,0 +1,82 @@
+/**
+ * HERTZ — токены.
+ *
+ * Сырые цвета существуют только здесь. В компонентах — var(--…).
+ * Палитра: глубокий чёрный, светлая бумага, кислотный лайм.
+ * После правки цветов: npm run contrast.
+ *
+ * Нормы: текст ≥ 4.5:1, границы интерактивных полей и фокус ≥ 3:1 (WCAG 1.4.11).
+ */
+
+:root {
+  /* --- примитивы --- */
+  --paper: #eaeaea;
+  --paper-2: #dededa;
+  --ink: #0a0a0a;
+  --ink-2: #141414;
+  --ink-3: #1b1b1b;
+  --muted: #8a9099; /* вторичный текст на тёмном */
+  --muted-ink: #555b63; /* вторичный текст на светлом */
+  --accent: #d0f43c;
+  --accent-ink: #3d4b00; /* акцент текстом на светлом */
+  --on-accent: #0a0a0a;
+  --line-light: #6f757c; /* границы полей на светлом, 3:1 */
+  --line-dark: #5a6168; /* границы полей на тёмном, 3:1 */
+  --hairline-light: #cfcfca;
+  --hairline-dark: #262626;
+  --white: #ffffff;
+  --red: #ff3b3b;
+
+  /* --- типографика --- */
+  --font-display: 'Inter Tight Variable', 'Inter Tight', 'Segoe UI', arial, sans-serif;
+  --font-mono: 'Martian Mono', 'Cascadia Mono', ui-monospace, monospace;
+  --font-text: 'Inter Tight Variable', 'Inter Tight', 'Segoe UI', arial, sans-serif;
+
+  /* --- сетка и ритм --- */
+  --container: 1440px;
+  --gutter: clamp(20px, 4vw, 56px);
+  --sec-pad: clamp(80px, 10vw, 160px);
+  --radius: 0px;
+
+  /* --- движение --- */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* --- семантика по умолчанию: тёмная сцена --- */
+  --bg: var(--ink);
+  --fg: var(--paper);
+  --fg-muted: var(--muted);
+  --accent-text: var(--accent);
+  --focus: var(--accent);
+  --line: var(--line-dark);
+  --hairline: var(--hairline-dark);
+}
+
+/**
+ * Поверхности. Секция объявляет surface-*, семантика переключается здесь.
+ */
+.surface-paper {
+  --bg: var(--paper);
+  --fg: var(--ink);
+  --fg-muted: var(--muted-ink);
+  --accent-text: var(--accent-ink);
+  --focus: var(--ink);
+  --line: var(--line-light);
+  --hairline: var(--hairline-light);
+}
+
+.surface-ink {
+  --bg: var(--ink);
+  --fg: var(--paper);
+  --fg-muted: var(--muted);
+  --accent-text: var(--accent);
+  --focus: var(--accent);
+  --line: var(--line-dark);
+  --hairline: var(--hairline-dark);
+}
+
+.surface-paper,
+.surface-ink {
+  background: var(--bg);
+  color: var(--fg);
+}

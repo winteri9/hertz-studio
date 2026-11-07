@@ -1,0 +1,77 @@
+{
+  "note": "Curated Unsplash photos for HERTZ. Direct CDN URLs and attribution collected from the photo pages. Free Unsplash License only; plus.unsplash.com is not used.",
+  "photos": [
+    {
+      "id": "btwOcuJhkJI",
+      "file": "01-console-detail.jpg",
+      "url": "https://images.unsplash.com/photo-1745848413083-cfea604edb6a?auto=format&fit=crop&w=2400&q=85",
+      "query": "recording studio mixing console",
+      "alt": "Close-up of a sound mixing console with faders and coloured indicator lights",
+      "author": "dlxmedia.hu",
+      "author_url": "https://unsplash.com/@dlxmedia",
+      "photo_url": "https://unsplash.com/photos/a-close-up-view-of-a-sound-mixing-console-btwOcuJhkJI",
+      "width": 3000,
+      "height": 2000
+    },
+    {
+      "id": "HLscdknwWtg",
+      "file": "02-console-room.jpg",
+      "url": "https://images.unsplash.com/photo-1701491071673-0daf10428e56?auto=format&fit=crop&w=2400&q=85",
+      "query": "recording studio mixing console",
+      "alt": "Mixing console and computer in a recording studio",
+      "author": "MiguelPhoto",
+      "author_url": "https://unsplash.com/@miguelphoto",
+      "photo_url": "https://unsplash.com/photos/a-sound-mixing-console-in-a-recording-studio-HLscdknwWtg",
+      "width": 3000,
+      "height": 2000
+    },
+    {
+      "id": "KiqrvOpdv0I",
+      "file": "03-condenser-mic.jpg",
+      "url": "https://images.unsplash.com/photo-1772399764232-c35bac262ed6?auto=format&fit=crop&w=2400&q=85",
+      "query": "music studio microphone",
+      "alt": "Studio condenser microphone on a stand with a pop filter",
+      "author": "Vidak",
+      "author_url": "https://unsplash.com/@vidak",
+      "photo_url": "https://unsplash.com/photos/a-studio-microphone-on-a-stand-with-pop-filter-KiqrvOpdv0I",
+      "width": 3000,
+      "height": 2000
+    },
+    {
+      "id": "0JAMafKZbjs",
+      "file": "04-gold-mic.jpg",
+      "url": "https://images.unsplash.com/photo-1610733661660-2e2110acb090?auto=format&fit=crop&w=2400&q=85",
+      "query": "music studio microphone",
+      "alt": "Gold condenser microphone on a black stand",
+      "author": "@felirbe",
+      "author_url": "https://unsplash.com/@felirbe",
+      "photo_url": "https://unsplash.com/photos/gold-condenser-microphone-on-black-stand-0JAMafKZbjs",
+      "width": 3000,
+      "height": 2000
+    },
+    {
+      "id": "TcBwceBVkSU",
+      "file": "05-turntable.jpg",
+      "url": "https://images.unsplash.com/photo-1780766136511-dbacfcd8246a?auto=format&fit=crop&w=2400&q=85",
+      "query": "vinyl record player",
+      "alt": "Record player spinning a vinyl record under warm light",
+      "author": "lesha tuman",
+      "author_url": "https://unsplash.com/@leshatuman",
+      "photo_url": "https://unsplash.com/photos/a-record-player-spinning-a-vinyl-record-with-warm-lighting-TcBwceBVkSU",
+      "width": 3000,
+      "height": 2000
+    },
+    {
+      "id": "67MZvjm9eQ4",
+      "file": "06-wave-texture.jpg",
+      "url": "https://images.unsplash.com/photo-1775217944380-6e782d25a040?auto=format&fit=crop&w=2400&q=85",
+      "query": "abstract sound waves",
+      "alt": "Abstract green and black wavy pattern",
+      "author": "Universtock",
+      "author_url": "https://unsplash.com/@universtock",
+      "photo_url": "https://unsplash.com/photos/abstract-green-and-black-wavy-pattern-67MZvjm9eQ4",
+      "width": 3000,
+      "height": 2000
+    }
+  ]
+}

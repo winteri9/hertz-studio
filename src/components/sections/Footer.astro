@@ -1,0 +1,320 @@
+---
+/**
+ * Footer — контакты и закрывающий знак HERTZ.
+ * Огромное слово работает фоном: оно декоративное и не мешает читать контакты.
+ * Атрибуция Unsplash обязательна — выводим авторов ссылками.
+ */
+import { photoCredit } from '../../lib/images';
+import { PHOTO_FILES } from '../../data/photos';
+import { CONTACTS, SITE, SOCIALS } from '../../data/site';
+
+const credits = Object.values(PHOTO_FILES)
+  .map((file) => photoCredit(file))
+  .filter((credit): credit is NonNullable<typeof credit> => Boolean(credit));
+---
+
+<footer class="footer surface-ink" id="contact" aria-labelledby="contact-title">
+  <div class="footer__top container">
+    <div class="footer__cta" data-reveal>
+      <p class="section-label"><span>04</span> Контакты</p>
+      <h2 class="footer__title" id="contact-title">
+        Есть трек?<br />Сделаем его тяжёлым.
+      </h2>
+      <a class="footer__email" href={CONTACTS.emailHref}>
+        <span>{CONTACTS.email}</span>
+        <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+
+    <div class="footer__details" data-reveal>
+      <div class="footer__group">
+        <p class="footer__label mono">Студия</p>
+        <a class="footer__text" href={CONTACTS.addressHref} target="_blank" rel="noopener">
+          {CONTACTS.address}
+        </a>
+        <p class="footer__muted mono">{CONTACTS.hours}</p>
+      </div>
+
+      <div class="footer__group">
+        <p class="footer__label mono">Связь</p>
+        <a class="footer__text" href={CONTACTS.phoneHref}>{CONTACTS.phone}</a>
+        <a class="footer__muted mono" href={CONTACTS.telegramHref} target="_blank" rel="noopener">
+          Telegram / {CONTACTS.telegram}
+        </a>
+      </div>
+
+      <div class="footer__group">
+        <p class="footer__label mono">Соцсети</p>
+        <ul class="footer__socials" role="list">
+          {
+            SOCIALS.map((social) => (
+              <li>
+                <a href={social.href} target="_blank" rel="noopener">
+                  {social.label}
+                  <span aria-hidden="true">↗</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer__legal container">
+    <p class="mono">© 2026 {SITE.legalName}</p>
+    <p class="mono footer__credits">
+      Фото:
+      {
+        credits.map((credit, index) => (
+          <>
+            <a href={credit.author_url} target="_blank" rel="nofollow noopener">
+              {credit.author}
+            </a>
+            {index < credits.length - 1 ? ', ' : ''}
+          </>
+        ))
+      }
+      / Unsplash
+    </p>
+    <p class="mono footer__demo">Демонстрационный кейс VOIDCODE</p>
+  </div>
+
+  <div class="footer__word-wrap" aria-hidden="true">
+    <span class="footer__word">{SITE.name}</span>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    padding-top: var(--sec-pad);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .footer__top {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 7fr 4fr;
+    gap: clamp(40px, 8vw, 140px);
+    align-items: start;
+    padding-bottom: clamp(60px, 8vw, 110px);
+  }
+
+  .footer__title {
+    max-width: 900px;
+    margin-top: 22px;
+    font-size: clamp(52px, 8.4vw, 120px);
+    line-height: 0.88;
+    letter-spacing: -0.06em;
+  }
+
+  .footer__email {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: clamp(30px, 4vw, 54px);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--accent);
+    font-family: var(--font-mono);
+    font-size: clamp(14px, 1.6vw, 22px);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--paper);
+    transition: color 0.25s var(--ease);
+  }
+
+  .footer__email span:last-child {
+    color: var(--accent);
+  }
+
+  .footer__email:hover {
+    color: var(--accent);
+  }
+
+  .footer__details {
+    display: grid;
+    gap: 30px;
+    padding-top: 10px;
+  }
+
+  .footer__group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding-top: 14px;
+    border-top: 1px solid var(--hairline-dark);
+  }
+
+  .footer__label {
+    font-size: 8px;
+    line-height: 1.4;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .footer__text {
+    max-width: 270px;
+    font-size: 16px;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    color: var(--paper);
+  }
+
+  .footer__text:hover {
+    color: var(--accent);
+  }
+
+  .footer__muted {
+    font-size: 8px;
+    line-height: 1.6;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .footer__muted:hover {
+    color: var(--accent);
+  }
+
+  .footer__socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+  }
+
+  .footer__socials a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    line-height: 1.5;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--paper);
+  }
+
+  .footer__socials a span {
+    color: var(--accent);
+  }
+
+  .footer__socials a:hover {
+    color: var(--accent);
+  }
+
+  .footer__legal {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 20px;
+    align-items: end;
+    padding-block: 18px;
+    border-top: 1px solid var(--hairline-dark);
+    font-size: 8px;
+    line-height: 1.5;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .footer__credits {
+    justify-self: center;
+    text-align: center;
+  }
+
+  .footer__credits a {
+    color: var(--paper);
+  }
+
+  .footer__credits a:hover {
+    color: var(--accent);
+  }
+
+  .footer__demo {
+    justify-self: end;
+    text-align: right;
+  }
+
+  .footer__word-wrap {
+    position: absolute;
+    inset: auto 0 -0.17em;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .footer__word {
+    display: block;
+    font-family: var(--font-display);
+    font-size: clamp(160px, 31vw, 480px);
+    font-weight: 900;
+    line-height: 0.7;
+    letter-spacing: -0.085em;
+    color: var(--ink-3);
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  @media (max-width: 1000px) {
+    .footer__top {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+
+    .footer__details {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .footer {
+      padding-top: clamp(72px, 16vw, 100px);
+    }
+
+    .footer__title {
+      margin-top: 18px;
+      font-size: clamp(44px, 13.5vw, 64px);
+    }
+
+    .footer__email {
+      margin-top: 26px;
+      font-size: 13px;
+      gap: 8px;
+    }
+
+    .footer__details {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .footer__group {
+      padding-top: 14px;
+    }
+
+    .footer__legal {
+      grid-template-columns: 1fr;
+      gap: 8px;
+      align-items: start;
+      padding-bottom: 24px;
+    }
+
+    .footer__credits,
+    .footer__demo {
+      justify-self: start;
+      text-align: left;
+    }
+
+    .footer__word {
+      font-size: 42vw;
+    }
+  }
+</style>

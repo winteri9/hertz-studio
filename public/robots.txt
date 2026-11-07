@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# HERTZ — demo case. Production domain: https://hertz.studio
