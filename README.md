@@ -7,7 +7,7 @@
 Запись, сведение, мастеринг и продакшн. Тёмный Hero, редакционная типографика,
 живой аудиосигнал и VHS-каталог релизов.
 
-[Vercel Link](ВСТАВЬ_ССЫЛКУ_ПОСЛЕ_ДЕПЛОЯ)
+[Vercel Link](https://hertz-studio.vercel.app)
 
 [![Astro](https://img.shields.io/badge/Astro-7.4.7-FF5D01?logo=astro&logoColor=white)](https://astro.build)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0.3-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -20,17 +20,7 @@
 
 ## Live Demo
 
-После деплоя на Vercel заменить плейсхолдер в блоке выше:
-
-```text
-[Vercel Link](ВСТАВЬ_ССЫЛКУ_ПОСЛЕ_ДЕПЛОЯ)
-```
-
-на прямую ссылку проекта, например:
-
-```text
-[Vercel Link](https://hertz-studio.vercel.app)
-```
+[https://hertz-studio.vercel.app](https://hertz-studio.vercel.app)
 
 ## Features
 
