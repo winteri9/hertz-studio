@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>404 — HERTZ</title>
+    <meta name="robots" content="noindex" />
+    <meta name="description" content="Страница не найдена — HERTZ." />
+    <style>
+      :root {
+        --ink: #0a0a0a;
+        --paper: #eaeaea;
+        --accent: #d0f43c;
+        --muted: #8a9099;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100svh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background: var(--ink);
+        color: var(--paper);
+        font-family: 'Inter Tight Variable', 'Segoe UI', arial, sans-serif;
+      }
+      main {
+        width: min(900px, 100%);
+      }
+      .code {
+        margin: 0;
+        font-family: 'Martian Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        color: var(--accent);
+      }
+      h1 {
+        margin: 18px 0 0;
+        font-size: clamp(64px, 15vw, 180px);
+        font-weight: 900;
+        line-height: 0.8;
+        letter-spacing: -0.07em;
+      }
+      p {
+        max-width: 420px;
+        margin: 28px 0 0;
+        font-size: 16px;
+        line-height: 1.5;
+        color: var(--muted);
+      }
+      a {
+        display: inline-flex;
+        margin-top: 32px;
+        padding: 12px 18px;
+        border: 1px solid var(--accent);
+        color: var(--paper);
+        font-family: 'Martian Mono', monospace;
+        font-size: 10px;
+        letter-spacing: 0.06em;
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+      a:hover {
+        background: var(--accent);
+        color: var(--ink);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="code">HZ / ERROR 404</p>
+      <h1>Нет сигнала.</h1>
+      <p>Страница потерялась между дорожками. Вернись на главную — там пульт на месте.</p>
+      <a href="/">На главную</a>
+    </main>
+  </body>
+</html>
